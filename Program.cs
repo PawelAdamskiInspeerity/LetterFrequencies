@@ -6,7 +6,7 @@ var repo = "lodash";
 var sha = "main";
 var token = "";
 var lettersRange = Enumerable.Range('a', 26);
-var maxDegreeOfParallelism = 10;
+var maxDegreeOfParallelism = 30;
 
 // Get GitHubClient
 var client = new GitHubClient(new ProductHeaderValue(System.Diagnostics.Process.GetCurrentProcess().ProcessName));
@@ -32,7 +32,7 @@ await Parallel.ForEachAsync(files, new ParallelOptions { MaxDegreeOfParallelism 
     {
         if (lettersRange.Contains(letter))
         {
-            letterFrequencies.AddOrUpdate(letter, 1, (_, oldValue) => Interlocked.Increment(ref oldValue));
+            letterFrequencies.AddOrUpdate(letter, 1, (_, oldValue) => oldValue + 1);
         }
     };
 });
@@ -41,7 +41,6 @@ await Parallel.ForEachAsync(files, new ParallelOptions { MaxDegreeOfParallelism 
 var sortedFrequencies = letterFrequencies.OrderByDescending(x => x.Value);
 
 // Display results
-Console.WriteLine($"Letters count: {sortedFrequencies.Sum(x => x.Value)}");
 Console.WriteLine($"Letter Frequencies in {owner}/{repo} repository (JavaScript/TypeScript Files):");
 
 foreach (var (letter, frequency) in sortedFrequencies)
